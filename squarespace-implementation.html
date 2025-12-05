@@ -183,13 +183,13 @@ body.modal-open {
     }
     
     // Open modal when button is clicked
-    btn.onclick = function() {
+    btn.addEventListener('click', function() {
       modal.style.display = 'block';
       document.body.classList.add('modal-open');
       
       // Add CSS to hide elements inside iframe after it loads
       if (iframe) {
-        iframe.onload = function() {
+        iframe.addEventListener('load', function() {
           try {
             // Inject CSS into iframe to hide unwanted elements
             var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
@@ -229,25 +229,25 @@ body.modal-open {
             // Cross-origin restriction - will use alternative method
             console.info('Cannot access iframe content due to cross-origin restrictions. Footer and header may still be visible.');
           }
-        };
+        });
       }
-    };
+    });
     
     // Close modal when X is clicked
     if (closeBtn) {
-      closeBtn.onclick = function() {
+      closeBtn.addEventListener('click', function() {
         modal.style.display = 'none';
         document.body.classList.remove('modal-open');
-      };
+      });
     }
     
     // Close modal when clicking outside the modal content
-    window.onclick = function(event) {
+    window.addEventListener('click', function(event) {
       if (event.target === modal) {
         modal.style.display = 'none';
         document.body.classList.remove('modal-open');
       }
-    };
+    });
     
     // Close modal on Escape key
     document.addEventListener('keydown', function(event) {
