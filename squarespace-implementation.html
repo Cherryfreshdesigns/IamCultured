@@ -1,0 +1,268 @@
+<!-- All-in-One Squarespace Implementation -->
+<!-- Add this entire code block to your Squarespace page via a Code Block -->
+
+<style>
+/* Subscribe Modal Styles */
+
+/* Button Styles */
+.subscribe-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.subscribe-button:hover {
+  background-color: #0056b3;
+}
+
+/* Modal Background */
+.subscribe-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal Content */
+.subscribe-modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 0;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+/* Close Button */
+.subscribe-modal-close {
+  color: #aaa;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10000;
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.subscribe-modal-close:hover,
+.subscribe-modal-close:focus {
+  color: #000;
+}
+
+/* Modal Body */
+.subscribe-modal-body {
+  padding: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Iframe Container */
+#constant-contact-frame {
+  border: none;
+  width: 100%;
+  min-height: 600px;
+  display: block;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .subscribe-modal-content {
+    width: 95%;
+    margin: 10% auto;
+  }
+  
+  #constant-contact-frame {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .subscribe-modal-content {
+    width: 98%;
+    margin: 5% auto;
+  }
+  
+  .subscribe-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  #constant-contact-frame {
+    min-height: 450px;
+  }
+}
+
+/* Modal Open - Prevent body scroll */
+body.modal-open {
+  overflow: hidden;
+}
+</style>
+
+<!-- Subscribe Button -->
+<button id="subscribe-modal-btn" class="subscribe-button">Subscribe to Newsletter</button>
+
+<!-- Modal Structure -->
+<div id="subscribe-modal" class="subscribe-modal">
+  <div class="subscribe-modal-content">
+    <span class="subscribe-modal-close">&times;</span>
+    <div class="subscribe-modal-body">
+      <iframe 
+        id="constant-contact-frame"
+        src="https://lp.constantcontactpages.com/sl/IAybakU/subscribe" 
+        width="100%" 
+        height="600" 
+        frameborder="0" 
+        scrolling="yes"
+        title="Subscribe Newsletter">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+// Subscribe Modal Script
+(function() {
+  'use strict';
+  
+  // Wait for DOM to be ready
+  function initModal() {
+    // Get modal elements
+    var modal = document.getElementById('subscribe-modal');
+    var btn = document.getElementById('subscribe-modal-btn');
+    var closeBtn = document.querySelector('.subscribe-modal-close');
+    var iframe = document.getElementById('constant-contact-frame');
+    
+    if (!modal || !btn) {
+      console.warn('Subscribe modal elements not found');
+      return;
+    }
+    
+    // Open modal when button is clicked
+    btn.onclick = function() {
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open');
+      
+      // Add CSS to hide elements inside iframe after it loads
+      if (iframe) {
+        iframe.onload = function() {
+          try {
+            // Inject CSS into iframe to hide unwanted elements
+            var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            var style = iframeDoc.createElement('style');
+            style.textContent = `
+              /* Hide Constant Contact footer */
+              .ctct-form-footer,
+              .ctct-form-footer-wrapper,
+              footer,
+              [class*="footer"],
+              .ctct-form-custom-footer {
+                display: none !important;
+              }
+              
+              /* Hide image container header */
+              .image_container,
+              .ctct-form-header,
+              [class*="image-container"],
+              [class*="header-image"] {
+                display: none !important;
+              }
+              
+              /* Adjust form to fill space */
+              body {
+                margin: 0 !important;
+                padding: 0 !important;
+              }
+              
+              .ctct-form-wrapper,
+              .ctct-form-container {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+              }
+            `;
+            iframeDoc.head.appendChild(style);
+          } catch (e) {
+            // Cross-origin restriction - will use alternative method
+            console.info('Cannot access iframe content due to cross-origin restrictions. Footer and header may still be visible.');
+          }
+        };
+      }
+    };
+    
+    // Close modal when X is clicked
+    if (closeBtn) {
+      closeBtn.onclick = function() {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      };
+    }
+    
+    // Close modal when clicking outside the modal content
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+    };
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && modal.style.display === 'block') {
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open');
+      }
+    });
+  }
+  
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initModal);
+  } else {
+    initModal();
+  }
+})();
+</script>
