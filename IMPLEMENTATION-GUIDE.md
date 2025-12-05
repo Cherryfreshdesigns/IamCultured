@@ -45,7 +45,6 @@ This implementation provides a button that opens a modal containing an embedded 
            src="https://lp.constantcontactpages.com/sl/IAybakU/subscribe" 
            width="100%" 
            height="600" 
-           frameborder="0" 
            scrolling="yes"
            title="Subscribe Newsletter">
          </iframe>
